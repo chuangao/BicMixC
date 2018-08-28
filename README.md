@@ -17,8 +17,8 @@ For macOS, openmp is turned off because it is not supported by default (yet) <br
 ### To run without using openmp
 ./BicMix --y input_file --out output_directory <br/>
 
-Please no headers in the input matrix, no missing values, just pure numbers, ideally quantile normalized  <br/> 
-For a gene expression matrix, it is prefered that each gene is a row and each sample is a column <br/> 
+#### Please no headers in the input matrix, no missing values, just pure numbers, ideally quantile normalized  <br/> 
+#### For a gene expression matrix, it is prefered that each gene is a row and each sample is a column <br/> 
 
 ### To run using openmp <br/>
 OMP_NUM_THREADS=10 ./BicMix --y input_file --out output_directory <br/>
