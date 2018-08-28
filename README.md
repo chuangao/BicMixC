@@ -18,7 +18,7 @@ For macOS, openmp is turned off because it is not supported by default (yet) <br
 ./BicMix --y input_file --out output_directory <br/>
 
 **Please no headers in the input matrix, no missing values, just pure numbers, ideally quantile normalized** <br/>
-**Also no corrections of confounding beforehand, BicMix will handle that** <br/>
+**Also no corrections of confounding beforehand, BicMix will handle that in the dense components** <br/>
 **For a gene expression matrix, it is prefered that each gene is a row and each sample is a column** <br/> 
 
 ### To run using openmp <br/>
