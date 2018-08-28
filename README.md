@@ -1,8 +1,8 @@
-# BicMixC
+## BicMixC
 
 BicMix is a sparse matrix decomposition tool. Given a matrix **Y** with dimension of **P** by **N**, BicMix decompose it into the product of two sparse matrices **LAM** and **X**
 
-# How to install
+## How to install
 
 git clone https://github.com/chuangao/BicMixC.git <br/>
 cd BicMixC <br/>
@@ -13,7 +13,7 @@ This will generate the executible **BicMix** (The compilation may take a few min
 For linux, the default compilation have openmp turned on <br/>
 For macOS, openmp is turned off because it is not supported by default (yet) <br/>
 
-# Usage
+## Usage
 ### To run without using openmp
 ./BicMix --y input_file --out output_directory <br/>
 ### To run using openmp <br/>
