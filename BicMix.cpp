@@ -77,6 +77,7 @@ int main(int argc,char *argv[]){
         if(s_itr.compare(argv[i])==0){n_itr=atoi(argv[i+1]);}
         
     }
+    //dir_out.replace(dir_out.end(),dir_out.end(),"/","");
     // convert directory name to char_array
     int n_char = dir_out.length();
     // declaring character array
@@ -99,6 +100,7 @@ int main(int argc,char *argv[]){
     //{
     //    /* opendir() failed for some other reason. */
     //}
+    
     
     // calculate the sample size and the gene numbers 
     string line;
