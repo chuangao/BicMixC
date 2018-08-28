@@ -43,7 +43,9 @@ OMP_NUM_THREADS=10 ./BicMix --y input_file --out output_directory <br/>
 **EXX** E(XX^T) <br/>
 
 #### The many iterations of output is for temporary access to intermediate results when the algorithm runs too long 
-
+#### Please refer to our paper for more details aobut the algorithm
+Context Specific and Differential Gene Co-expression Networks via Bayesian Biclustering <br/>
+http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1004791
 
 
 
