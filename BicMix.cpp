@@ -19,6 +19,9 @@
 #include <gsl/gsl_sf_psi.h>
 #include <gsl/gsl_sf_gamma.h>
 #include <unistd.h>
+
+#include <dirent.h>
+#include <errno.h>
 //#include <unsupported/Eigen/MatrixFunctions>
 
 using namespace Eigen;
@@ -47,7 +50,7 @@ int main(int argc,char *argv[]){
 	start = clock();
     
     // declare variables 
-    int nf=50,nf2=0,s_n=0,d_y=0,i_seed=0,n_itr=5001;
+    int nf=100,nf2=0,s_n=0,d_y=0,i_seed=0,n_itr=5001,write_itr=50;
     double a=0.5,b=0.5,c=1,d=0.5,g=1,h=1,alpha=1,beta=1;
 	//double a=0.5,b=0.5,c=0.5,d=0.5,g=0.5,h=0.5,alpha=1,beta=1;
     
@@ -56,10 +59,10 @@ int main(int argc,char *argv[]){
 
     sep="tab";
     
-    int interval=200;
+    int interval=500;
     
     // read in argument
-    string s_df="--nf",s_y="--y",s_out="--out",s_sep="--sep",s_a="--a",s_b="--b",s_c="--c",s_d="--d",s_seed="--seed",s_itr="--itr",s_interval="--interval";
+    string s_df="--nf",s_y="--y",s_out="--out",s_sep="--sep",s_a="--a",s_b="--b",s_c="--c",s_d="--d",s_seed="--seed",s_itr="--itr",s_interval="--interval",s_write_itr="--write_itr";
     for(int i=0;i<argc;i++){
         if(s_df.compare(argv[i])==0){nf=atoi(argv[i+1]);}
         if(s_y.compare(argv[i])==0){file_y=argv[i+1];}
@@ -68,7 +71,34 @@ int main(int argc,char *argv[]){
         if(s_interval.compare(argv[i])==0){interval=atoi(argv[i+1]);}
 		if(s_a.compare(argv[i])==0){a=atof(argv[i+1]);}
 		if(s_b.compare(argv[i])==0){b=atof(argv[i+1]);}
+        if(s_interval.compare(argv[i])==0){interval=atoi(argv[i+1]);}
+        if(s_write_itr.compare(argv[i])==0){write_itr=atoi(argv[i+1]);}
+        //if(s_seed.compare(argv[i])==0){i_seed=atoi(argv[i+1]);}
+        if(s_itr.compare(argv[i])==0){n_itr=atoi(argv[i+1]);}
+        
     }
+    // convert directory name to char_array
+    int n_char = dir_out.length();
+    // declaring character array
+    char char_array[n_char+1];
+    // copying the contents of the
+    // string to char array
+    strcpy(char_array, dir_out.c_str());
+    DIR* dir = opendir(char_array);
+    if (dir)
+    {
+        /* Directory exists. */
+        closedir(dir);
+    }
+    else
+    {
+        /* Directory does not exist. */
+        printf("Can't open results directory, stopping. \n");exit(0);
+    }
+    //else
+    //{
+    //    /* opendir() failed for some other reason. */
+    //}
     
     // calculate the sample size and the gene numbers 
     string line;
@@ -80,6 +110,7 @@ int main(int argc,char *argv[]){
     {
         printf("Gene expression file open failed\n");exit(0);
     }
+    
     getline(f,line);
     s_n++;
     istringstream iss(line);
@@ -103,12 +134,23 @@ int main(int argc,char *argv[]){
         }
         f_com << endl;
     }
-    f_com << endl << "Y_TMP has dimension of " << s_n << " by " << d_y << endl << endl;
+    f_com << "Y matrix has dimension of " << s_n << " by " << d_y << endl << endl;
+    f_com << "Starting analysis using factor number of " << nf << endl;
+    //f_com << "Command is written in command.txt" << endl;
+    f_com << "The total number of runs is set to "  << n_itr << endl;
+    f_com << "Results will be written for every " << write_itr << " iterations" << endl;
+    f_com << "Convergence is reached if the total number of sparse elements remain unchanged for " << interval << " iterations" << endl;
+    f_com.close();
+    
+    cout << "Starting analysis using factor number of " << nf << endl;
+    cout << "Details of the run parameters can be found in command.txt" << endl;
+    cout << "The total number of runs is set to "  << n_itr << endl;
+    cout << "Results will be written for every " << write_itr << " iterations" << endl;
+    cout << "Convergence is reached if the total number of sparse elements remain unchanged for " << interval << " iterations" << endl;
     
     // read in the Y matrix 
     MatrixXd Y_TMP=MatrixXd::Constant(s_n,d_y,0);
    
-    
     f.clear();
     f.seekg (0, ios_base::beg);
     int i=0,j=0;
@@ -137,8 +179,8 @@ int main(int argc,char *argv[]){
     MatrixXd Y=MatrixXd::Constant(s_n,d_y,0);
     //Y=(Y_TMP.block(0,0,s_n,d_y)).transpose();
     Y=Y_TMP.block(0,0,s_n,d_y);
-    f_com << "Submatrix of Y has dimension of " << s_n << " by " << d_y << endl;
-    f_com.close();
+    //f_com << "Submatrix of Y has dimension of " << s_n << " by " << d_y << endl;
+    
     
     //int snbak=s_n;
     //s_n=d_y;
@@ -164,7 +206,7 @@ int main(int argc,char *argv[]){
          
     // Declare variables independent of factor number to prepare for the EM algorithm
 
-	  VectorXd psi_v = VectorXd::Constant(s_n,1);
+    VectorXd psi_v = VectorXd::Constant(s_n,1);
     VectorXd PSI=VectorXd::Constant(s_n,1);
     VectorXd PSI_INV=VectorXd::Constant(s_n,1);
 	
@@ -975,7 +1017,7 @@ int main(int argc,char *argv[]){
 			//cout << "range logZ\n" << std::setprecision(3) << logZ << endl;
 		}
 
-		if(itr%20==0){
+		if(itr%write_itr==0){
 			
 			//if(itr>0&&itr%100==0){
 			//if(((lam_count_v(itr)-lam_count_v(itr-interval)==0)&&(x_count_v(itr)-x_count_v(itr-interval)==0))||itr%100==0){				
@@ -1061,20 +1103,20 @@ int main(int argc,char *argv[]){
 
 			ss.str("");
 			ss.clear();
-			ss << dir_out << "/count_lam_v_" << itr;
+			ss << dir_out << "/count_lam_" << itr;
 			ofstream f_count_lam (ss.str().c_str());
 			if (f_count_lam.is_open()){
-				f_count_lam << lam_count_v << endl;
+				f_count_lam << count_lam.transpose() << endl;
 			}
 			f_count_lam.close();
 
 
 			ss.str("");
 			ss.clear();
-			ss << dir_out << "/count_x_v_" << itr;
+			ss << dir_out << "/count_x_" << itr;
 			ofstream f_count_x (ss.str().c_str());
 			if (f_count_x.is_open()){
-				f_count_x << x_count_v << endl;
+				f_count_x << count_x.transpose() << endl;
 			}
 			f_count_x.close();
 		}
@@ -1157,19 +1199,19 @@ int main(int argc,char *argv[]){
 
 				ss.str("");
                 ss.clear();
-                ss << dir_out << "/count_lam_v";
+                ss << dir_out << "/count_lam";
                 ofstream f_count_lam (ss.str().c_str());
                 if (f_count_lam.is_open()){
-                    f_count_lam << lam_count_v << endl;
+                    f_count_lam << count_lam.transpose() << endl;
                 }
                 f_count_lam.close();
 
 				ss.str("");
 				ss.clear();
-				ss << dir_out << "/count_x_v";
+				ss << dir_out << "/count_x";
 				ofstream f_count_x (ss.str().c_str());
 				if (f_count_x.is_open()){
-					f_count_x << x_count_v << endl;
+					f_count_x << count_x.transpose() << endl;
 				}
 				f_count_x.close();
 
