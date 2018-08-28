@@ -8,7 +8,8 @@ git clone https://github.com/chuangao/BicMixC.git <br/>
 cd BicMix <br/>
 make <br/>
 
-This will generate the executible BicMix <br/>
+This will generate the executible **BicMix** <br/>
+
 For linux, the default compilation have openmp turned on <br/>
 For macOS, openmp is turned off because by default it is not supported (yet) <br/>
 
