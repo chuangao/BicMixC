@@ -1,4 +1,4 @@
-## BicMixC
+## BicMixC (This is in need of update. Please check BicMix for a most updated R version) 
 
 BicMix is a sparse matrix decomposition tool. Given a matrix **Y** with dimension of **P** by **N**, BicMix decompose it into the product of two sparse matrices **LAM** and **X**
 
